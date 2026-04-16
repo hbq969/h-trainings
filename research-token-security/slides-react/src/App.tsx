@@ -16,11 +16,24 @@ const chaptersMap = new Map<string, { id: string; number: string; title: string;
 const chapterDefs = [
   { id: 'cover', number: '封面', title: 'AI Token API 网关安全研究报告' },
   { id: 'ch01', number: 'Chapter 01', title: '执行摘要' },
+  { id: 'ch02', number: 'Chapter 02', title: '行业背景' },
+  { id: 'ch03', number: 'Chapter 03', title: '安全威胁分析' },
+  { id: 'ch04', number: 'Chapter 04', title: '认证与访问控制' },
+  { id: 'ch05', number: 'Chapter 05', title: '数据安全' },
+  { id: 'ch06', number: 'Chapter 06', title: '内容安全防护' },
+  { id: 'ch07', number: 'Chapter 07', title: '模型滥用防护' },
+  { id: 'ch08', number: 'Chapter 08', title: '合规性设计' },
+  { id: 'ch09', number: 'Chapter 09', title: '成本控制与计费' },
+  { id: 'ch10', number: 'Chapter 10', title: '高可用架构' },
+  { id: 'ch11', number: 'Chapter 11', title: '实施方案' },
+  { id: 'ch12', number: 'Chapter 12', title: '结论与建议' },
 ]
 
 slides.forEach((_SlideComponent, idx) => {
   const chapterDef = chapterDefs[idx] || { id: `ch${idx}`, number: `Chapter ${idx}`, title: '' }
-  const isChapterTitle = idx === 0 || idx === 1 // Cover 和 Chapter01 标题页
+  // 每个章节的第一页是标题页 (idx 对应每个章节的起始位置)
+  // Cover 是第0页，Chapter01 标题是第1页，内容是第2页，以此类推
+  const isChapterTitle = idx === 0 || (idx >= 1 && idx % 2 === 1)
 
   slideInfos.push({
     id: `slide-${idx}`,

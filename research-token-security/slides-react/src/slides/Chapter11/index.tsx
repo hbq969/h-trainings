@@ -38,7 +38,7 @@ export function Chapter11() {
         <div>
           <SectionBox label="Implementation Roadmap" title="四阶段实施路线图">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {phases.map((p, idx) => (
+              {phases.map((p) => (
                 <Card
                   key={p.phase}
                   size="small"
@@ -76,7 +76,7 @@ export function Chapter11() {
                   M2: 内容安全上线
                 </Text>
                 <Text type="secondary" style={{ fontSize: '11px' }}>
-                  注入检测率 >95% + 输出过滤
+                  注入检测率 &gt;95% + 输出过滤
                 </Text>
               </CompactCard>
               <CompactCard>
@@ -92,7 +92,7 @@ export function Chapter11() {
                   M4: 高可用达标
                 </Text>
                 <Text type="secondary" style={{ fontSize: '11px' }}>
-                  99.99% SLA + RTO<5min
+                  99.99% SLA + RTO &lt;5min
                 </Text>
               </CompactCard>
             </div>

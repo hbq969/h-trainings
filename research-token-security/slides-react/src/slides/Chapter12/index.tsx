@@ -3,7 +3,7 @@ import { ContentSlide } from '../../components/ContentSlide'
 import { SectionBox, ScrollableTable, CompactCard } from '../../components/shared'
 import { Card, Typography, Tag } from 'antd'
 
-const { Text, Paragraph } = Typography
+const { Text } = Typography
 
 // 核心结论数据
 const conclusions = [
