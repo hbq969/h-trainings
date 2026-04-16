@@ -1,0 +1,68 @@
+.slide {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  padding-top: 40px; /* ChapterIndicator 高度 */
+  padding-bottom: 50px; /* PageIndicator 高度 */
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #146ef5;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  color: #080808;
+  margin: 0;
+}
+
+.body {
+  flex: 1;
+  overflow: auto;
+}
+
+/* 两列布局 */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  height: 100%;
+}
+
+/* 三列布局 */
+.threeCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .twoCol, .threeCol {
+    grid-template-columns: 1fr;
+  }
+}
