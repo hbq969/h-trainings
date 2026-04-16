@@ -8,7 +8,7 @@ interface PageIndicatorProps {
   onToggleFullscreen?: () => void
 }
 
-export function PageIndicator({ current, total, onToggleNav, onToggleFullscreen }: PageIndicatorProps) {
+export function PageIndicator({ current, total }: PageIndicatorProps) {
   const percent = Math.round(((current + 1) / total) * 100)
 
   return (

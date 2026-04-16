@@ -83,7 +83,7 @@ export function Chapter01() {
                 { title: '建议', dataIndex: 'advice' },
                 { title: '影响', dataIndex: 'impact' },
               ]}
-              rowKey={(r, i) => String(i)}
+              rowKey={(_r, i) => String(i)}
             />
           </SectionBox>
         </div>

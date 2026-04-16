@@ -1,4 +1,4 @@
-import { CoverSlide } from '../../components/CoverSlide'
+import { CoverSlide } from '../components/CoverSlide'
 
 export function Cover() {
   return (
