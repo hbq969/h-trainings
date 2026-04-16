@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code 使用介绍 - Neon Cyber</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+        }
+        :root {
+            --title-size: clamp(1.5rem, 5vw, 4rem);
+            --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+            --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+            --small-size: clamp(0.65rem, 1vw, 0.875rem);
+            --slide-padding: clamp(1rem, 4vw, 4rem);
+            --content-gap: clamp(0.5rem, 2vw, 2rem);
+            --element-gap: clamp(0.25rem, 1vw, 1rem);
+        }
+
+        /* === NEON CYBER THEME === */
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-dark: #050810;
+            --bg-card: #0d1526;
+            --accent-cyan: #00ffcc;
+            --accent-magenta: #ff00aa;
+            --accent-blue: #00aaff;
+            --text-primary: #ffffff;
+            --text-secondary: #8892a6;
+            --text-muted: #4a5568;
+            --border-color: #1e2d4a;
+            --glow-cyan: 0 0 20px rgba(0, 255, 204, 0.5);
+            --glow-magenta: 0 0 20px rgba(255, 0, 170, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Satoshi', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-cyan {
+            top: -200px;
+            right: -200px;
+            background: var(--accent-cyan);
+        }
+
+        .bg-glow-magenta {
+            bottom: -200px;
+            left: -200px;
+            background: var(--accent-magenta);
+        }
+
+        /* Particle */
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        h1 { font-size: var(--title-size); }
+        h2 { font-size: var(--h2-size); }
+        h3 { font-size: var(--h3-size); }
+
+        .display-text {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            line-height: 1;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-number {
+            font-family: 'Clash Display', sans-serif;
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-bottom: var(--element-gap);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+            transform: translateY(-2px);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .card-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .card-grid-3 { grid-template-columns: 1fr; }
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            margin-top: 0.5rem;
+            overflow-x: auto;
+        }
+
+        /* Lists */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 0.4rem 0;
+            padding-left: 1.25rem;
+            position: relative;
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+        }
+
+        li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: var(--small-size);
+            font-weight: 500;
+        }
+
+        .badge-gold { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); }
+        .badge-silver { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; border: 1px solid rgba(192, 192, 192, 0.3); }
+        .badge-bronze { background: rgba(205, 127, 50, 0.2); color: #cd7f32; border: 1px solid rgba(205, 127, 50, 0.3); }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--small-size);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.65rem;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: var(--body-size);
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            box-shadow: var(--glow-cyan);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Keyboard hints */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 100;
+        }
+
+        kbd {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+            margin: 0 0.25rem;
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+        .reveal-delay-6 { transition-delay: 0.6s; }
+
+        /* Icon placeholder */
+        .icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 204, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Quote */
+        .quote {
+            font-size: clamp(1.25rem, 3vw, 2rem);
+            font-style: italic;
+            color: var(--text-primary);
+            position: relative;
+            padding: 2rem;
+        }
+
+        .quote::before, .quote::after {
+            content: '"';
+            font-size: 4rem;
+            color: var(--accent-cyan);
+            opacity: 0.3;
+            position: absolute;
+            font-family: 'Clash Display', sans-serif;
+        }
+
+        .quote::before { top: 0; left: 0; }
+        .quote::after { bottom: -1rem; right: 0; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-grid { grid-template-columns: 1fr; }
+            .nav-dots { right: 1rem; }
+        }
+
+        @media (max-height: 600px) {
+            .card-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-cyan"></div>
+    <div class="bg-glow bg-glow-magenta"></div>
+    <div id="particles"></div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots" id="navDots"></div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">
+        <kbd>↑</kbd> <kbd>↓</kbd> 导航 · <kbd>Space</kbd> 下一页
+    </div>
+
+    <!-- Slide 1: Cover -->
+    <section class="slide" id="slide-1">
+        <div class="bg-grid"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <div class="reveal">
+                <div class="section-number">VIBE CODING</div>
+            </div>
+            <h1 class="display-text reveal reveal-delay-1">Claude Code</h1>
+            <p class="subtitle reveal reveal-delay-2" style="margin: 1.5rem 0;">使用介绍</p>
+            <p class="reveal reveal-delay-3" style="color: var(--text-secondary); max-width: 500px;">
+                掌握 AI 辅助编程的核心技能<br>提升开发效率 10 倍
+            </p>
+            <div class="reveal reveal-delay-4" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <span class="btn btn-primary">开始学习</span>
+                <span class="btn btn-secondary">经验总结</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Tool Intro - Part 1 -->
+    <section class="slide" id="slide-2">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">01</div>
+                <h2 style="margin-bottom: 0.5rem;">工具介绍</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">市面主流的 Vibe Coding 工具</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <span class="badge badge-gold">🥇</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-cyan);">Claude Code</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        Anthropic 官方出品的全能型 AI 工程师。具备完整 Computer Use 能力。
+                    </p>
+                    <ul>
+                        <li>终端原生，完美融入命令行</li>
+                        <li>支持 MCP 扩展和 Hooks 系统</li>
+                        <li>Mac 独占，Token 消耗较大</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <span class="badge badge-gold">🥇</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-cyan);">Codex</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        OpenAI 出品，量大管饱的 AI 员工。模型能力接近 Claude Opus 4.1。
+                    </p>
+                    <ul>
+                        <li>全平台支持（Win/Mac）</li>
+                        <li>量大，免费版可用</li>
+                        <li>可持续执行复杂工程任务</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <span class="badge badge-silver">🥈</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-blue);">Cursor</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        无缝融入的 AI 副驾驶。基于 VS Code 深度定制。
+                    </p>
+                    <ul>
+                        <li>支持 JetBrains 全系列 IDE</li>
+                        <li>模型选择灵活</li>
+                        <li>适合习惯传统 IDE 的开发者</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Tool Intro - Part 2 -->
+    <section class="slide" id="slide-3">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">01</div>
+                <h2 style="margin-bottom: 0.5rem;">工具介绍 · 续</h2>
+            </div>
+            <div class="card-grid" style="margin-bottom: 2rem;">
+                <div class="card reveal reveal-delay-1">
+                    <span class="badge badge-silver">🥈</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-blue);">OpenCode</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        开源界的黑马。双 Agent 架构，支持 75+ 模型。
+                    </p>
+                    <ul>
+                        <li>GitHub 超 8.9 万星</li>
+                        <li>多 Agent 并行几乎零冲突</li>
+                        <li>无供应商锁定</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <span class="badge badge-bronze">🥉</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-magenta);">Trae</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        国产化替代首选。专为中国开发者优化。
+                    </p>
+                    <ul>
+                        <li>内置 DeepSeek 模型</li>
+                        <li>安全合规（等保 2.0）</li>
+                        <li>支持私有化部署</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <span class="badge badge-bronze">🥉</span>
+                    <h3 style="margin: 0.75rem 0; color: var(--accent-magenta);">Qoder</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        灵活轻量的接入点。通过插件获得完整能力。
+                    </p>
+                    <ul>
+                        <li>可接入任意 OpenAI 兼容 API</li>
+                        <li>成本低，适合尝试多种模型</li>
+                        <li>支持 Roo Code、Continue 等插件</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Tool Comparison Table -->
+    <section class="slide" id="slide-4">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">01</div>
+                <h2 style="margin-bottom: 1rem;">工具对比</h2>
+            </div>
+            <div class="table-container reveal reveal-delay-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 140px; white-space: nowrap;">工具</th>
+                            <th>自主执行能力</th>
+                            <th>IDE集成深度</th>
+                            <th>核心特点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color: var(--accent-cyan);">🥇 Claude Code</strong></td>
+                            <td>极高 · 完整 Computer Use</td>
+                            <td>极深（终端原生）</td>
+                            <td>全能型 AI 工程师 · Mac 独占</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-cyan);">🥇 Codex</strong></td>
+                            <td>高 · 可持续执行复杂任务</td>
+                            <td>中等（终端/IDE均可）</td>
+                            <td>量大管饱 · 全平台支持</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-blue);">🥈 Cursor</strong></td>
+                            <td>中高 · IDE框架内运行</td>
+                            <td>极深（原生IDE）</td>
+                            <td>无缝融入 · 集成体验最好</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-blue);">🥈 OpenCode</strong></td>
+                            <td>高 · 双 Agent 架构</td>
+                            <td>中等（终端优先）</td>
+                            <td>开源黑马 · 75+ 模型支持</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-magenta);">🥉 Trae</strong></td>
+                            <td>中 · 内置 DeepSeek</td>
+                            <td>深（国产IDE）</td>
+                            <td>国产化首选 · 安全合规</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-magenta);">🥉 Qoder</strong></td>
+                            <td>中 · 插件化扩展</td>
+                            <td>中等（插件化）</td>
+                            <td>灵活轻量 · 成本低</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Environment Setup -->
+    <section class="slide" id="slide-5">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">02</div>
+                <h2 style="margin-bottom: 0.5rem;">环境搭建</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">从零开始搭建 Claude Code 开发环境</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <div class="icon">📦</div>
+                    <h3>安装 Claude Code</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        通过 npm 全局安装
+                    </p>
+                    <div class="code-block">npm install -g @anthropic-ai/claude-code</div>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <div class="icon">🔐</div>
+                    <h3>登录与授权</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        运行登录命令
+                    </p>
+                    <div class="code-block">claude login</div>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <div class="icon">🔄</div>
+                    <h3>国产模型配置</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        使用 CC Switch 切换国产模型
+                    </p>
+                    <ul>
+                        <li>支持 GLM、Qwen、MinMax 等</li>
+                        <li>降低网络依赖成本</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-4">
+                    <div class="icon">🎓</div>
+                    <h3>新手指引学习</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        使用 /powerup 命令
+                    </p>
+                    <ul>
+                        <li>新手指引教程</li>
+                        <li>进阶功能学习</li>
+                        <li>实战案例演练</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Three Modes -->
+    <section class="slide" id="slide-6">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">02</div>
+                <h2 style="margin-bottom: 0.5rem;">三种模式详解</h2>
+            </div>
+            <div class="card-grid-3" style="margin-top: 2rem;">
+                <div class="card reveal reveal-delay-1" style="text-align: center; border-color: var(--accent-cyan);">
+                    <div class="icon" style="margin: 0 auto 1rem;">⚡</div>
+                    <h3 style="color: var(--accent-cyan);">默认模式</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem;">
+                        交互式确认<br>每步操作需用户批准
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-2" style="text-align: center;">
+                    <div class="icon" style="margin: 0 auto 1rem;">🤖</div>
+                    <h3 style="color: var(--accent-magenta);">自动模式</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem;">
+                        批量执行<br>自动确认低风险操作
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-3" style="text-align: center;">
+                    <div class="icon" style="margin: 0 auto 1rem;">📋</div>
+                    <h3 style="color: var(--accent-blue);">规划模式</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin-top: 0.5rem;">
+                        先规划后执行<br>AI 制定计划，用户确认
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Terminal Commands -->
+    <section class="slide" id="slide-7">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">03</div>
+                <h2 style="margin-bottom: 0.5rem;">终端命令与复杂任务</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">掌握终端命令执行和任务管理的高级技巧</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <div class="icon">💻</div>
+                    <h3>执行终端命令</h3>
+                    <div class="code-block">claude "npm install && npm run build"</div>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <div class="icon">📋</div>
+                    <h3>规划模式</h3>
+                    <ul>
+                        <li>明确任务步骤</li>
+                        <li>预估实现方案</li>
+                        <li>降低返工率</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <div class="icon">⏳</div>
+                    <h3>后台任务管理</h3>
+                    <ul>
+                        <li>任务队列管理</li>
+                        <li>实时状态查看</li>
+                        <li>异步结果通知</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-4">
+                    <div class="icon">🔓</div>
+                    <h3>跳过权限检测</h3>
+                    <div class="code-block">claude --dangerously-skip-permissions</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Common Commands -->
+    <section class="slide" id="slide-8">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">03</div>
+                <h2 style="margin-bottom: 2rem;">常用命令</h2>
+            </div>
+            <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="card reveal reveal-delay-1" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/model</span>
+                    <span style="color: var(--text-secondary);">切换模型版本</span>
+                </div>
+                <div class="card reveal reveal-delay-2" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/init</span>
+                    <span style="color: var(--text-secondary);">初始化 CLAUDE.md</span>
+                </div>
+                <div class="card reveal reveal-delay-3" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/compact</span>
+                    <span style="color: var(--text-secondary);">压缩上下文</span>
+                </div>
+                <div class="card reveal reveal-delay-4" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/resume</span>
+                    <span style="color: var(--text-secondary);">恢复历史会话</span>
+                </div>
+                <div class="card reveal reveal-delay-5" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/rewind</span>
+                    <span style="color: var(--text-secondary);">回滚代码状态</span>
+                </div>
+                <div class="card reveal reveal-delay-6" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/clear</span>
+                    <span style="color: var(--text-secondary);">清除上下文</span>
+                </div>
+                <div class="card reveal reveal-delay-1" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/btw</span>
+                    <span style="color: var(--text-secondary);">随便聊（不写入上下文）</span>
+                </div>
+                <div class="card reveal reveal-delay-2" style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--accent-cyan); font-family: monospace; font-size: var(--body-size);">/mcp</span>
+                    <span style="color: var(--text-secondary);">管理 MCP Server</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Multimodal -->
+    <section class="slide" id="slide-9">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">04</div>
+                <h2 style="margin-bottom: 0.5rem;">多模态与上下文管理</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">图片处理、MCP Server、会话管理</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <div class="icon">⏪</div>
+                    <h3>版本回滚 Rewind</h3>
+                    <ul>
+                        <li>查看变更历史</li>
+                        <li>选择性回滚</li>
+                        <li>安全恢复点</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <div class="icon">🖼️</div>
+                    <h3>图片处理</h3>
+                    <ul>
+                        <li>UI 截图分析</li>
+                        <li>代码截图识别</li>
+                        <li>错误界面诊断</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <div class="icon">🔗</div>
+                    <h3>MCP Server</h3>
+                    <ul>
+                        <li>读取设计稿信息</li>
+                        <li>获取设计规范</li>
+                        <li>设计转代码</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-4">
+                    <div class="icon">💾</div>
+                    <h3>恢复历史会话</h3>
+                    <div class="code-block">claude --resume</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 10: CLAUDE.md -->
+    <section class="slide" id="slide-10">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">04</div>
+                <h2 style="margin-bottom: 0.5rem;">项目记忆文件 CLAUDE.md</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">定义项目规则和上下文</p>
+            </div>
+            <div class="card reveal reveal-delay-1">
+                <div class="code-block" style="font-size: var(--body-size);">
+<pre># Project Rules
+- 技术栈: React + TypeScript
+- 代码风格: ESLint + Prettier
+- 命名规范: PascalCase for components
+- API前缀: /api/v1/
+- 测试要求: 单元测试覆盖率 > 80%</pre>
+                </div>
+            </div>
+            <div class="card-grid" style="margin-top: 1.5rem;">
+                <div class="card reveal reveal-delay-2">
+                    <ul>
+                        <li>定义技术栈和编码规范</li>
+                        <li>指定目录结构</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <ul>
+                        <li>配置 API 前缀</li>
+                        <li>声明测试要求</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: Advanced Features -->
+    <section class="slide" id="slide-11">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">05</div>
+                <h2 style="margin-bottom: 0.5rem;">高级功能扩展</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">Hook、Skills、Plugin、SubAgent</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <div class="icon">🪝</div>
+                    <h3>Hook</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        自定义事件钩子
+                    </p>
+                    <ul>
+                        <li>pre-command 钩子</li>
+                        <li>post-command 钩子</li>
+                        <li>自定义工作流</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <div class="icon">🛠️</div>
+                    <h3>Skills</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        工具 + Workflow 组合
+                    </p>
+                    <ul>
+                        <li>封装常用操作</li>
+                        <li>定义工作流模板</li>
+                        <li>团队协作共享</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <div class="icon">🔌</div>
+                    <h3>Plugin</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        扩展插件系统
+                    </p>
+                    <ul>
+                        <li>第三方工具集成</li>
+                        <li>自定义命令</li>
+                        <li>功能增强</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-4">
+                    <div class="icon">🎯</div>
+                    <h3>SubAgent</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary); margin: 0.5rem 0;">
+                        子代理系统
+                    </p>
+                    <ul>
+                        <li>任务分解执行</li>
+                        <li>并行加速处理</li>
+                        <li>结果聚合</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 12: Skills vs SubAgent -->
+    <section class="slide" id="slide-12">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">05</div>
+                <h2 style="margin-bottom: 2rem;">Skills vs SubAgent</h2>
+            </div>
+            <div class="card-grid-3">
+                <div class="card reveal reveal-delay-1" style="border-color: var(--accent-cyan);">
+                    <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;">Skills</h3>
+                    <ul>
+                        <li>工具和流程组合</li>
+                        <li>用于复用</li>
+                        <li>定义"怎么做"</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-2" style="border-color: var(--accent-magenta);">
+                    <h3 style="color: var(--accent-magenta); margin-bottom: 1rem;">SubAgent</h3>
+                    <ul>
+                        <li>独立任务执行单元</li>
+                        <li>执行"做什么"</li>
+                        <li>并行处理子任务</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <h3 style="color: var(--text-secondary); margin-bottom: 1rem;">⚠️ 注意</h3>
+                    <ul>
+                        <li>子 agent 之间没法协调沟通</li>
+                        <li>复杂任务建议用规划模式</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 13: Plugins -->
+    <section class="slide" id="slide-13">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">06</div>
+                <h2 style="margin-bottom: 0.5rem;">必装的插件</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">扩展 Claude Code 功能的必备插件</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1">
+                    <div class="icon">📦</div>
+                    <h3>添加插件市场</h3>
+                    <div class="code-block">/plugin marketplace add obra/superpowers-marketplace</div>
+                </div>
+                <div class="card reveal reveal-delay-2">
+                    <div class="icon">🎨</div>
+                    <h3>claude-hud</h3>
+                    <ul>
+                        <li>可视化状态面板</li>
+                        <li>实时显示状态</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-3">
+                    <div class="icon">🔍</div>
+                    <h3>find-skills</h3>
+                    <ul>
+                        <li>技能搜索工具</li>
+                        <li>发现可用 skills</li>
+                    </ul>
+                </div>
+                <div class="card reveal reveal-delay-4">
+                    <div class="icon">🏢</div>
+                    <h3>官方插件市场</h3>
+                    <ul>
+                        <li>claude-plugins-official</li>
+                        <li>obra/superpowers-marketplace</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 14: Experience 1-3 -->
+    <section class="slide" id="slide-14">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">07</div>
+                <h2 style="margin-bottom: 0.5rem;">经验总结</h2>
+                <p class="subtitle" style="margin-bottom: 2rem;">避免踩坑的 7 条核心经验</p>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1" style="border-left: 3px solid var(--accent-cyan);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">01</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">先写 CLAUDE.md，再写代码</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        模型上下文理解能力很强，但它得先知道你的规则。把技术栈、目录结构、编码习惯全塞进 CLAUDE.md 中。
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-2" style="border-left: 3px solid var(--accent-magenta);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">02</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">别着急写业务，先让它画蓝图</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        用 plan 模式，让 AI 先输出文件结构、模块划分、数据流向。审完蓝图再开工，返工率直接降 80%。
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-3" style="border-left: 3px solid var(--accent-blue);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">03</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">一次只干一件事</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        千万别让它一口吃一个胖子。把需求拆成小任务一个个做，AI 在小范围里的代码质量极高。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 15: Experience 4-7 -->
+    <section class="slide" id="slide-15">
+        <div class="slide-content">
+            <div class="reveal">
+                <div class="section-number">07</div>
+                <h2 style="margin-bottom: 2rem;">经验总结 · 续</h2>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal reveal-delay-1" style="border-left: 3px solid var(--accent-cyan);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">04</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">先写测试，再写实现</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        让 AI 自己先出测试用例，等于给它定好及格线。测试本身就是最好的文档。
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-2" style="border-left: 3px solid var(--accent-magenta);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">05</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">Code Review 永远不能省</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        AI 写的代码 90% 能用，但那 10% 的坑藏的很深。每次花两分钟扫一眼关键逻辑。
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-3" style="border-left: 3px solid var(--accent-blue);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">06</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">用 MCP 和 Skills 给它立规矩</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        把项目的最佳实践封装成 MCP 或 Skills。AI 直接按你的标准来写代码。
+                    </p>
+                </div>
+                <div class="card reveal reveal-delay-4" style="border-left: 3px solid var(--accent-cyan);">
+                    <span class="section-number" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">07</span>
+                    <h3 style="margin: 0.5rem 0; font-size: var(--h3-size);">该重置上下文就重置</h3>
+                    <p style="font-size: var(--body-size); color: var(--text-secondary);">
+                        一旦发现它开始答非所问，果断重置。一个干净的上下文比又臭又长的对话高效 10 倍。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 16: Summary -->
+    <section class="slide" id="slide-16">
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <div class="reveal">
+                <div class="quote" style="max-width: 800px; margin: 0 auto;">
+                    Vibe Coding 真不是偷懒，它是一套全新的工程能力。会用的人效率起飞，不会用的人只会觉得"AI也不太行啊"。<br><br>
+                    <span style="color: var(--accent-cyan);">核心就一句话：你得非常清楚地知道自己要什么，AI 才能帮你快速完成落地。</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 17: End -->
+    <section class="slide" id="slide-17">
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <div class="reveal">
+                <h1 class="display-text" style="font-size: clamp(2rem, 6vw, 4rem);">谢谢观看</h1>
+                <p class="subtitle" style="margin-top: 1rem;">Made with ♥ using Claude Code</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (15 + Math.random() * 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // Create nav dots
+        function createNavDots() {
+            const container = document.getElementById('navDots');
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                dot.addEventListener('click', () => {
+                    slide.scrollIntoView({ behavior: 'smooth' });
+                });
+                container.appendChild(dot);
+            });
+        }
+
+        // Intersection Observer for reveal animations
+        function setupReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // Update active nav dot on scroll
+        function updateNavDots() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.nav-dot');
+            if (slides.length === 0 || dots.length === 0) return;
+
+            let current = 0;
+            slides.forEach((slide, i) => {
+                const rect = slide.getBoundingClientRect();
+                if (rect.top <= window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
+                    current = i;
+                }
+            });
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === current);
+            });
+        }
+
+        // Setup Intersection Observer for nav dots
+        function setupNavDotsObserver() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.nav-dot');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const index = Array.from(slides).indexOf(entry.target);
+                        dots.forEach((dot, i) => {
+                            dot.classList.toggle('active', i === index);
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            slides.forEach(slide => observer.observe(slide));
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const slides = document.querySelectorAll('.slide');
+            const currentSlide = Array.from(slides).findIndex(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= 0 && rect.top < window.innerHeight / 2;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            createNavDots();
+            setupReveal();
+            setupNavDotsObserver();
+        });
+
+        window.addEventListener('scroll', updateNavDots);
+    </script>
+</body>
+</html>
