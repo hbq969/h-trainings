@@ -606,6 +606,34 @@ body.edit-active .slide {
   margin-bottom: 0.4rem;
 }
 
+/* QR codes on cover */
+.qr-row {
+  display: flex;
+  gap: clamp(1rem, 4vw, 3rem);
+  justify-content: center;
+  align-items: center;
+}
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.qr-card img {
+  width: clamp(80px, 12vw, 140px);
+  height: clamp(80px, 12vw, 140px);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.12);
+  background: #fff;
+  padding: 6px;
+  object-fit: contain;
+}
+.qr-card span {
+  font-family: var(--font-mono);
+  font-size: var(--small-size);
+  color: var(--text-muted);
+}
+
 /* P17 — Closing */
 .closing-slide {
   background:
@@ -646,6 +674,16 @@ body.edit-active .slide {
     <h1 class="reveal" style="font-family:var(--font-display); font-weight:800; font-size:var(--title-size); margin-top:var(--content-gap); letter-spacing:-0.02em;" contenteditable="true">日志采集平台</h1>
     <p class="reveal" style="font-size:var(--h3-size); color:var(--text-muted); font-family:var(--font-mono); margin-top:var(--element-gap);" contenteditable="true">架构设计与技术实践</p>
     <p class="reveal" style="font-size:var(--body-size); color:var(--accent-cyan); margin-top:var(--content-gap); font-family:var(--font-display); font-weight:600;" contenteditable="true">多源采集 · 规则驱动 · 插件化扩展</p>
+    <div class="qr-row reveal" style="margin-top: clamp(1.5rem, 4vh, 2.5rem);">
+      <div class="qr-card">
+        <img src="bm.png" alt="报名二维码" />
+        <span>扫码报名</span>
+      </div>
+      <div class="qr-card">
+        <img src="qd.png" alt="签到二维码" />
+        <span>扫码签到</span>
+      </div>
+    </div>
   </div>
 </section>
 
